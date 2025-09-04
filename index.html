@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Photobooth - Pembayaran</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        #qris-image {
+            width: 250px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        #next-button {
+            margin-top: 25px; padding: 15px 30px; font-size: 18px;
+            color: white; background-color: #007bff; border: none;
+            border-radius: 8px; cursor: pointer;
+        }
+        #exit-button {
+            position: fixed; top: 20px; right: 20px;
+            width: 50px; height: 50px; background-color: #dc3545;
+            color: white; border: none; border-radius: 50%;
+            font-size: 24px; font-weight: bold; cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <button id="exit-button">X</button>
+    <div class="container">
+        <h1>Silakan Scan untuk Pembayaran</h1>
+        <img id="qris-image" src="my-qris.jpeg" alt="QRIS Code">
+        <br>
+        <button id="next-button">Lanjutkan (Konfirmasi Petugas)</button>
+    </div>
+
+    <script>
+        // Logika sederhana untuk navigasi dan keluar
+        document.getElementById('next-button').addEventListener('click', () => {
+            window.location.href = 'template.html';
+        });
+        document.getElementById('exit-button').addEventListener('click', () => {
+            window.electronAPI.exitApp(); // Panggil fungsi keluar via preload
+        });
+    </script>
+</body>
+</html>
