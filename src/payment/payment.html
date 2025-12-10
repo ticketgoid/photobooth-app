@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pembayaran</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: #f0f2f5; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- CONTAINER UTAMA --- */
+        .card {
+            background: white; padding: 40px;
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center; width: 400px;
+            position: relative; z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        h1 { margin-top: 0; color: #333; font-size: 1.8rem; }
+        .price-tag { font-size: 2.5rem; font-weight: 800; color: #00C4CC; margin: 10px 0; }
+        
+        /* Area QRIS */
+        #qris-container {
+            width: 280px; height: 280px;
+            background: #fff; 
+            border: 2px dashed #ddd; border-radius: 15px;
+            margin: 20px auto; display: flex;
+            justify-content: center; align-items: center;
+            overflow: hidden; position: relative;
+        }
+        #qris-img { width: 100%; height: 100%; object-fit: contain; display: none; z-index: 2; }
+
+        /* Timer Badge */
+        .timer-badge {
+            background: #ffecb3; color: #d84315;
+            padding: 8px 20px; border-radius: 30px;
+            font-weight: bold; font-size: 1.1rem;
+            display: inline-block; margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* --- ANIMASI HOURGLASS --- */
+        .hourglass-loader {
+            display: inline-block; position: relative;
+            width: 60px; height: 60px; 
+            margin-bottom: 10px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .hourglass-loader:after {
+            content: " "; display: block;
+            border-radius: 50%; width: 0; height: 0;
+            box-sizing: border-box;
+            border: 26px solid #00C4CC;
+            border-color: #00C4CC transparent #00C4CC transparent;
+            animation: hourglass 1.2s infinite;
+            margin: 0; 
+        }
+
+        /* Versi Kecil */
+        .hourglass-loader.small {
+            width: 30px; height: 30px;
+            margin-bottom: 0; margin-right: 10px;
+        }
+        .hourglass-loader.small:after {
+            border-width: 13px; 
+        }
+
+        @keyframes hourglass {
+            0% { transform: rotate(0); animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); }
+            50% { transform: rotate(900deg); animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+            100% { transform: rotate(1800deg); }
+        }
+
+        /* --- LAYAR SUKSES FULL SCREEN --- */
+        #success-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #4CAF50;
+            z-index: 100; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            color: white; animation: slideUp 0.5s ease-out;
+        }
+        .check-circle {
+            width: 120px; height: 120px;
+            background: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .check-icon { font-size: 60px; color: #4CAF50; animation: scaleUp 0.5s 0.3s backwards; }
+
+        /* --- LAYAR GAGAL FULL SCREEN --- */
+        #fail-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 100; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .fail-circle {
+            width: 100px; height: 100px;
+            background: #ffebee; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 20px; border: 4px solid #ef5350;
+        }
+        .fail-icon { font-size: 50px; color: #ef5350; }
+        .btn-retry {
+            padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
+            background: #ef5350; color: white;
+            border: none; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(239, 83, 80, 0.3);
+            transition: transform 0.2s; margin-top: 20px;
+        }
+        .btn-retry:hover { transform: scale(1.05); background: #e53935; }
+
+        /* Helper Styles */
+        .status-title { font-size: 2.5rem; font-weight: bold; margin: 0; }
+        .status-desc { font-size: 1.2rem; opacity: 0.9; margin-top: 10px; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes scaleUp { from { transform: scale(0); } to { transform: scale(1); } }
+        #hidden-preloader { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="payment-card">
+        <h1>Scan QRIS</h1>
+        <div class="price-tag">Rp 0</div> <div id="qris-container">
+            <div id="qris-loading" style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+                <div class="hourglass-loader"></div>
+                <p style="margin-top:0;">Membuat Kode...</p>
+            </div>
+            <img id="qris-img" alt="QRIS Code">
+        </div>
+        
+        <div id="status-area" style="display:flex; flex-direction:column; align-items:center;">
+            <div style="display:flex; align-items:center; justify-content:center;">
+                <div class="hourglass-loader small" style="display:none;" id="waiting-anim"></div>
+                <p id="status-text" style="font-weight:bold; color:#555; margin:5px 0;">Menghubungkan...</p>
+            </div>
+            <div id="timer-badge" class="timer-badge" style="display:none;">
+                <i class="far fa-clock"></i> <span id="time-left">05:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-screen">
+        <div class="check-circle"><i class="fas fa-check check-icon"></i></div>
+        <div class="status-title">Pembayaran Berhasil!</div>
+        <div class="status-desc">Mengalihkan ke studio foto...</div>
+    </div>
+
+    <div id="fail-screen">
+        <div class="fail-circle"><i class="fas fa-times fail-icon"></i></div>
+        <h2 style="color:#333; margin:0;">Pembayaran Gagal</h2>
+        <p id="fail-reason" style="color:#666;">Waktu pembayaran habis.</p>
+        <button class="btn-retry" id="btn-retry"><i class="fas fa-redo"></i> Ulangi Pembayaran</button>
+    </div>
+
+    <div id="hidden-preloader"></div>
+
+    <script>
+        // DOM Elements
+        const paymentCard = document.getElementById('payment-card');
+        const qrisImg = document.getElementById('qris-img');
+        const qrisLoading = document.getElementById('qris-loading');
+        const statusText = document.getElementById('status-text');
+        const waitingAnim = document.getElementById('waiting-anim');
+        const timerBadge = document.getElementById('timer-badge');
+        const timeLeftSpan = document.getElementById('time-left');
+        const priceTag = document.querySelector('.price-tag');
+        
+        const successScreen = document.getElementById('success-screen');
+        const failScreen = document.getElementById('fail-screen');
+        const failReason = document.getElementById('fail-reason');
+        const btnRetry = document.getElementById('btn-retry');
+        const preloader = document.getElementById('hidden-preloader');
+
+        // State Variables
+        let currentOrderId = null;
+        let checkInterval = null;
+        let timerInterval = null;
+        
+        // --- PERBAIKAN DI SINI: Harga Dinamis ---
+        let storedPrice = localStorage.getItem('selectedPrice');
+        // Default 15000 jika data tidak ditemukan/rusak
+        const NOMINAL_HARGA = storedPrice ? parseInt(storedPrice) : 15000;
+        
+        // Update Tampilan Harga
+        priceTag.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(NOMINAL_HARGA)}`;
+
+        const PAYMENT_TIMEOUT_SECONDS = 300; // 5 Menit
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            preloadTemplates(); 
+            initPaymentFlow();
+        });
+
+        async function initPaymentFlow() {
+            failScreen.style.display = 'none';
+            successScreen.style.display = 'none';
+            paymentCard.style.display = 'block';
+            qrisImg.style.display = 'none';
+            qrisLoading.style.display = 'flex';
+            timerBadge.style.display = 'none';
+            waitingAnim.style.display = 'none';
+            statusText.innerText = "Membuat Tagihan...";
+            
+            if (timerInterval) clearInterval(timerInterval);
+            if (checkInterval) clearInterval(checkInterval);
+
+            await generateQris();
+        }
+
+        async function generateQris() {
+            try {
+                // Gunakan NOMINAL_HARGA dinamis yang sudah didefinisikan di atas
+                const result = await window.electronAPI.createQrisTransaction(NOMINAL_HARGA);
+
+                if (result.success) {
+                    currentOrderId = result.orderId;
+                    qrisImg.src = result.qrUrl;
+                    qrisImg.onload = () => {
+                        qrisLoading.style.display = 'none';
+                        qrisImg.style.display = 'block';
+                        waitingAnim.style.display = 'flex';
+                        statusText.innerText = "Menunggu Pembayaran...";
+                        timerBadge.style.display = 'inline-block';
+                        startTimer(PAYMENT_TIMEOUT_SECONDS);
+                        startPollingStatus();
+                    };
+                } else {
+                    showFailure("Gagal membuat QRIS. Cek internet.");
+                }
+            } catch (error) {
+                console.error(error);
+                showFailure("Terjadi kesalahan sistem.");
+            }
+        }
+
+        function startTimer(duration) {
+            let timer = duration, minutes, seconds;
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                timeLeftSpan.textContent = minutes + ":" + seconds;
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    clearInterval(checkInterval);
+                    showFailure("Waktu pembayaran telah habis.");
+                }
+            }, 1000);
+        }
+
+        function startPollingStatus() {
+            if (checkInterval) clearInterval(checkInterval);
+            checkInterval = setInterval(async () => {
+                if (!currentOrderId) return;
+                const result = await window.electronAPI.checkPaymentStatus(currentOrderId);
+                if (result.success) {
+                    if (result.status === 'settlement') {
+                        clearInterval(checkInterval);
+                        clearInterval(timerInterval);
+                        showSuccess();
+                    } else if (result.status === 'expire' || result.status === 'cancel') {
+                        clearInterval(checkInterval);
+                        clearInterval(timerInterval);
+                        showFailure("Pembayaran dibatalkan atau kedaluwarsa.");
+                    }
+                }
+            }, 3000);
+        }
+
+        function showSuccess() {
+            successScreen.style.display = 'flex';
+            setTimeout(() => {
+                // Alur Baru: Sukses Bayar -> Loading -> Foto
+                window.location.href = '../loading/loading.html';
+            }, 3000);
+        }
+
+        function showFailure(reason) {
+            failReason.innerText = reason;
+            failScreen.style.display = 'flex';
+        }
+
+        btnRetry.addEventListener('click', () => {
+            initPaymentFlow();
+        });
+
+        async function preloadTemplates() {
+            try {
+                const templates = await window.electronAPI.getTemplates();
+                Object.values(templates).forEach(tpl => {
+                    if (tpl.visible !== false) {
+                        const img = new Image();
+                        img.src = `file:///${tpl.path}`;
+                        preloader.appendChild(img);
+                    }
+                });
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+</html>

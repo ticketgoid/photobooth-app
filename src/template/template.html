@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pilih Template</title>
+    <link rel="stylesheet" href="template.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="user-view" class="view-section">
+        <button id="btn-back-landing" class="nav-back-btn">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </button>
+
+        <h1 class="page-title">Pilih Bingkai Foto Kamu</h1>
+        <div id="user-carousel" class="carousel"></div>
+        
+        <div class="action-area">
+            <button id="btn-user-action" class="btn-action disabled" disabled>
+                Pilih frame dulu kak :)
+            </button>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="view-section" style="display: none;">
+        <h1 class="page-title">Pengelolaan Template</h1>
+        <div id="admin-carousel" class="carousel">
+            <div class="carousel-item add-new-card" id="btn-upload">
+                <div class="add-icon">+</div>
+                <span>Upload Baru</span>
+            </div>
+        </div>
+        <div class="action-area">
+            <button id="btn-exit-admin" class="btn-action btn-danger">Simpan & Keluar</button>
+        </div>
+    </div>
+
+    <div id="admin-editor" class="view-section" style="display: none; flex-direction: column;">
+        <div class="editor-header">
+            <h3>Edit Template</h3>
+            <button id="btn-cancel-edit" class="btn-small">Kembali</button>
+        </div>
+
+        <div class="editor-main-layout">
+            <div id="editor-workspace">
+                <div id="editor-stage">
+                    <div id="slots-layer"></div>
+                    <img id="template-img" src="" draggable="false">
+                </div>
+            </div>
+
+            <div class="editor-sidebar">
+                <div class="sidebar-section">
+                    <h4 class="sidebar-title">Tools Area</h4>
+                    <button id="btn-add-slot" class="tool-btn btn-primary"><i class="fas fa-plus"></i> Tambah Slot</button>
+                    <button id="btn-clear-slots" class="tool-btn btn-warn"><i class="fas fa-trash"></i> Reset Slot</button>
+                </div>
+
+                <div class="sidebar-separator"></div>
+
+                <div class="sidebar-section">
+                    <h4 class="sidebar-title">Pengaturan Harga</h4>
+                    
+                    <label class="toggle-label box-input" style="margin-bottom: 10px; border-color: #28a745;">
+                        <input type="checkbox" id="chk-free"> 
+                        <span style="color: #28a745; font-weight: bold;">Set Sebagai GRATIS</span>
+                    </label>
+
+                    <input type="number" id="inp-price" class="input-price" placeholder="Contoh: 15000">
+                </div>
+
+                <div class="sidebar-section">
+                    <label class="toggle-label box-input">
+                        <input type="checkbox" id="chk-visible"> Tampil di User
+                    </label>
+                </div>
+
+                <div class="sidebar-separator"></div>
+
+                <div class="sidebar-section" style="margin-top: auto;">
+                    <button id="btn-save-template" class="tool-btn btn-success"><i class="fas fa-save"></i> SIMPAN</button>
+                    <button id="btn-delete-template" class="tool-btn btn-danger-outline">Hapus Template</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="template.js"></script>
+</body>
+</html>

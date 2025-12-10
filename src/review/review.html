@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Review Foto</title>
+    <link rel="stylesheet" href="review.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="review-container">
+        <h1 class="page-title">Review Hasil Foto</h1>
+        
+        <div class="preview-layout">
+            <div class="preview-column">
+                <h3>Hasil Foto</h3>
+                <div id="photo-strip-container" class="strip-container">
+                    </div>
+            </div>
+
+            <div class="preview-column">
+                <h3>Live Moment</h3>
+                <div id="video-strip-container" class="strip-container">
+                    </div>
+            </div>
+
+            <div class="preview-column">
+                <h3>GIF</h3>
+                <div class="gif-container">
+                    <img id="gif-player" src="" alt="Generating GIF...">
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button id="btn-retake" class="btn-secondary" style="display:none;">
+                <i class="fas fa-camera"></i> Foto Ulang (<span id="retake-count">0</span>)
+            </button>
+            <button id="btn-print" class="btn-primary">
+                Cetak Foto <i class="fas fa-print"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="review.js"></script>
+</body>
+</html>

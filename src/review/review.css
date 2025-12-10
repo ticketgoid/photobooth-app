@@ -1,0 +1,99 @@
+body {
+    margin: 0; height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.review-container {
+    width: 95%; height: 95%;
+    background: white; border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px; box-sizing: border-box;
+}
+
+.page-title { margin: 0 0 20px 0; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+
+/* Layout 3 Kolom */
+.preview-layout {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.preview-column {
+    display: flex; flex-direction: column; align-items: center;
+    background: #f8f9fa; border-radius: 15px;
+    padding: 15px;
+    width: 30%;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.preview-column h3 { margin: 0 0 15px 0; color: #555; }
+
+/* Strip Container (Vertikal) */
+.strip-container {
+    display: flex; flex-direction: column; gap: 15px;
+    width: 100%; height: 100%;
+    overflow-y: auto; align-items: center;
+}
+
+/* Kartu Media Individual */
+.media-card {
+    position: relative;
+    width: 200px; height: 150px; /* Rasio 4:3 */
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: black;
+    border: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.media-card.selected-delete {
+    border-color: #dc3545;
+    opacity: 0.6;
+}
+
+.media-card img, .media-card video {
+    width: 100%; height: 100%; object-fit: cover;
+}
+
+/* Overlay Delete */
+.delete-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(220, 53, 69, 0.7);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.2s; cursor: pointer;
+}
+.media-card:hover .delete-overlay { opacity: 1; }
+.delete-overlay i { color: white; font-size: 2rem; }
+
+/* GIF Area */
+.gif-container {
+    width: 100%; flex: 1;
+    display: flex; justify-content: center; align-items: center;
+}
+#gif-player {
+    max-width: 100%; max-height: 400px;
+    border-radius: 10px; border: 4px solid #00C4CC;
+}
+
+/* Action Bar */
+.action-bar {
+    margin-top: 20px; height: 60px;
+    display: flex; gap: 20px;
+}
+
+button {
+    padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
+    border: none; border-radius: 50px; cursor: pointer;
+    transition: transform 0.2s;
+}
+button:hover { transform: scale(1.05); }
+
+.btn-primary { background: #00C4CC; color: white; box-shadow: 0 5px 15px rgba(0, 196, 204, 0.3); }
+.btn-secondary { background: #ffc107; color: #333; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); }
