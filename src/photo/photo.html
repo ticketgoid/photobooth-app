@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sesi Foto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 4. Full Putih untuk Flash */
+        body { 
+            margin: 0; height: 100vh; 
+            background: #ffffff; 
+            color: #333; 
+            display: flex; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+        
+        /* --- PANEL KIRI (Preview Template) --- */
+        /* Default: Hidden (Muncul hanya saat sesi dimulai) */
+        #preview-panel {
+            display: none; /* Hilang di awal */
+            width: 25%; 
+            background: #f0f0f0;
+            justify-content: center; align-items: center;
+            position: relative;
+            border-right: 1px solid #ddd;
+        }
+
+        #template-stage {
+            position: relative;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        #frame-overlay {
+            width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0;
+            z-index: 20; object-fit: contain;
+        }
+
+        #mini-video {
+            position: absolute; object-fit: cover; z-index: 10; background: #000;
+        }
+
+        .captured-slot {
+            position: absolute; background-size: cover; background-position: center; z-index: 15;
+        }
+
+        /* --- PANEL KANAN (Live View Besar) --- */
+        #camera-panel { 
+            width: 100%; /* Awalnya Full Screen */
+            height: 100%;
+            position: relative; 
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #main-video { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+        }
+        
+        /* --- OVERLAY COUNTDOWN (PERBAIKAN POSISI) --- */
+        #overlay-info {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; /* Sembunyi default */
+            flex-direction: column; 
+            justify-content: flex-start; /* Isi mulai dari atas */
+            align-items: center;
+            z-index: 50;
+            padding-top: 50px; /* Jarak dari atas */
+            pointer-events: none;
+        }
+
+        /* Countdown di ATAS agar tidak menutupi muka */
+        #countdown-text { 
+            font-size: 8rem; /* Ukuran pas */
+            font-weight: 900; 
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin-top: 20px;
+        }
+
+        #status-text { 
+            font-size: 2rem; font-weight: bold; color: #333;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 40px; border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        /* --- OVERLAY "SIAP-SIAP" (LOADING SESSION) --- */
+        #get-ready-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 999; /* Paling atas */
+            display: none; /* Sembunyi default */
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .ready-text { font-size: 5rem; font-weight: 800; color: #00C4CC; animation: pulse 1s infinite; }
+        .ready-sub { font-size: 1.5rem; color: #555; margin-top: 10px; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* --- CONTROLS --- */
+        #controls-area {
+            position: absolute; bottom: 50px;
+            display: flex; gap: 20px;
+            z-index: 60;
+            background: rgba(255,255,255,0.9);
+            padding: 15px 30px; border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .btn-ctrl {
+            padding: 12px 30px; font-size: 1.2rem; font-weight: bold;
+            border: none; border-radius: 50px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .btn-mirror { background: #e0e0e0; color: #333; }
+        .btn-start { background: #00C4CC; color: white; }
+
+        /* Loader Awal */
+        #camera-loader {
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:white; z-index:9999; 
+            display:flex; justify-content:center; align-items:center;
+        }
+
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <div id="camera-loader">
+        <h2 style="color:#333;">Menyalakan Kamera...</h2>
+    </div>
+
+    <div id="get-ready-overlay">
+        <div class="ready-text">SIAP - SIAP!</div>
+        <div class="ready-sub">Atur gayamu...</div>
+    </div>
+
+    <div id="preview-panel">
+        <div id="template-stage">
+            <img id="frame-overlay" src="">
+            <video id="mini-video" autoplay muted></video>
+        </div>
+    </div>
+
+    <div id="camera-panel">
+        <video id="main-video" autoplay muted></video>
+        
+        <div id="overlay-info">
+            <div id="status-text" style="display:none;"></div>
+            <div id="countdown-text"></div>
+        </div>
+
+        <div id="controls-area">
+            <button id="btn-mirror" class="btn-ctrl btn-mirror"><i class="fas fa-exchange-alt"></i> Mirror</button>
+            <button id="btn-start" class="btn-ctrl btn-start"><i class="fas fa-camera"></i> Mulai Foto</button>
+        </div>
+    </div>
+
+    <canvas id="capture-canvas"></canvas>
+    <script src="photo.js"></script>
+</body>
+</html>

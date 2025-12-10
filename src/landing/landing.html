@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Photobooth</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1a1a1a; 
+            color: white;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        .container { text-align: center; }
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .btn-start {
+            padding: 20px 60px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            background-color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            animation: pulse 2s infinite;
+        }
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
+            animation: none;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PHOTOBOOTH</h1>
+        <button class="btn-start" id="btn-start">MULAI</button>
+    </div>
+
+    <script>
+        // 1. Tombol Mulai (User Flow)
+        document.getElementById('btn-start').addEventListener('click', () => {
+            // [UBAH ALUR] Ke Template dulu, bukan Payment
+            window.location.href = '../template/template.html';
+        });
+
+        // 2. Shortcut Admin Langsung (Tekan 't' saja)
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 't') {
+                // Langsung masuk tanpa password
+                window.location.href = '../template/template.html?mode=admin';
+            }
+        });
+    </script>
+</body>
+</html>
